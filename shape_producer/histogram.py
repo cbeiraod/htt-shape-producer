@@ -63,7 +63,8 @@ class TTreeContent(object):
         #m.update(self.cuts.expand())  # TODO: Not implemented?
         m.update(self._weights.extract())
         m.update(self._folder)
-        m.update(self._variable.name)  # TODO: not implemented?
+        if isinstance(self, Histogram):
+            m.update(self._variable.name)  # TODO: not implemented?
         return int(m.hexdigest(), 16)
 
     @property
@@ -112,13 +113,15 @@ class Histogram(TTreeContent):
         if not self.is_present():
             logger.fatal("Histogram %s is not produced.", self.name)
             raise Exception
+        n_negative_bins = 0
         for i_bin in range(1, self._result.GetNbinsX() + 1):
             if self._result.GetBinContent(i_bin) < 0.0:
                 logger.debug(
                     "Negative value found in histogram %s for bin %d.",
                     self._result, i_bin)
-                return True
-        return False
+                self._result.SetBinContent(i_bin, 0)
+                n_negative_bins += 1
+        return n_negative_bins > 0
 
 
 # class to count the (weighted) number of events in a selection
@@ -162,7 +165,11 @@ class Count(TTreeContent):
 # TODO: Remove me: Too much magic involved
 def create_root_object(**kwargs):
     if "variable" in kwargs.keys():
-        return Histogram(**kwargs)
+        if "count" in kwargs["variable"].name:
+            kwargs.pop("variable")
+            return Count(**kwargs)
+        else:
+            return Histogram(**kwargs)
     else:
         return Count(**kwargs)
 

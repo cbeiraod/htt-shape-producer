@@ -4,6 +4,7 @@ from cutstring import *
 from estimation_methods import EstimationMethod
 from estimation_methods_2016 import DataEstimation as DataEstimation2016
 from estimation_methods_2016 import QCDEstimation as QCDEstimation2016
+from estimation_methods_2016 import QCDEstimationABCD as QCDEstimationABCD2016
 from estimation_methods_2016 import VVEstimation as VVEstimation2016
 from era import log_query
 
@@ -13,6 +14,10 @@ class DataEstimation(DataEstimation2016):
 
 
 class QCDEstimation(QCDEstimation2016):
+    pass
+
+
+class QCDEstimationABCD(QCDEstimationABCD2016):
     pass
 
 
